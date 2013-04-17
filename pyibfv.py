@@ -13,7 +13,7 @@ import sys
 import math
 import random
 import numpy as np
-import Image
+from PIL import Image
 
 class PyIBFV:
     
@@ -50,14 +50,14 @@ class PyIBFV:
         # FBO texture 1
         self.renderedTexture1 = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, self.renderedTexture1)
-        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, 0)
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, None)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         
         # FBO texture 2
         self.renderedTexture2 = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, self.renderedTexture2)
-        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, 0)
+        glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, None)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
         
