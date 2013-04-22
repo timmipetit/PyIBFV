@@ -316,7 +316,7 @@ class PyIBFV:
 		glutInitWindowSize(512, 512)
 		glutInitWindowPosition(0, 0)
 		window = glutCreateWindow("PyIBFV")
-		glutDisplayFunc(self.DrawGLScene)
+		glutDisplayFunc(self.drawGLScene)
 		glutIdleFunc(self.idleFunc)
 		glutReshapeFunc(self.ReSizeGLScene)
 		glutKeyboardFunc(self.keyPressed)
