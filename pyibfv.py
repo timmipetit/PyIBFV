@@ -76,8 +76,9 @@ class PyIBFV:
 		size = self.nmesh ** 2 * 2
 
 		# locations
-		locations = self.getDisplacements()
-		self.vbo_locations = vbo.VBO(locations)
+		self.locations = None
+		self.getDisplacements()
+		self.vbo_locations = vbo.VBO(self.locations)
 
 		# texture coordinates
 		coords = np.empty(size, dtype=np.float32)
@@ -121,18 +122,19 @@ class PyIBFV:
 		return texture
 
 	def getDisplacements(self):
-		size = self.nmesh ** 2 * 2
-		locations = np.empty(size, dtype=np.float32)
+		if self.locations is None:
+			size = self.nmesh ** 2 * 2
+			self.locations = np.empty(size, dtype=np.float32)
 		index = 0
 		for i in range(self.nmesh):
 			x = self.DM*i
 			for j in range(self.nmesh):
 				y = self.DM*j
 				[px, py] = self.getDisplacement(x, y)
-				locations[index + 0] = px
-				locations[index + 1] = py
+				self.locations[index + 0] = px
+				self.locations[index + 1] = py
 				index += 2
-		return locations
+		return self.locations
 
 	def updateDisplacements(self):
 		self.sa = 0.010*math.cos(self.framenr*2.0*math.pi/200.0)
@@ -181,8 +183,6 @@ class PyIBFV:
 			glBindTexture(GL_TEXTURE_2D, 0)
 
 			self.textures.append(texture)
-
-
 
 	def getDisplacement(self, x, y):
 		dx = x - 0.5
@@ -278,15 +278,14 @@ class PyIBFV:
 		glDisable(GL_TEXTURE_2D)
 
 	def idleFunc(self):
+		self.updateDisplacements()
 		self.drawGLScene()
 		self.fps()
 		glutSwapBuffers()
 
 	# The main drawing function.
 	def drawGLScene(self):
-		# update displacements vbo
 		self.framenr += 1
-		self.updateDisplacements()
 		self.drawToFbo()
 		self.drawFboTOScreen()
 
