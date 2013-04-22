@@ -201,11 +201,7 @@ class PyIBFV:
 		py = y + vy
 		return [px, py]
 
-	# The main drawing function.
-	def DrawGLScene(self):
-		# update displacements vbo
-		self.updateDisplacements()
-
+	def drawToFbo(self):
 		# Draw to the texture in the FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)
 		glViewport(0,0,512,512)
@@ -255,11 +251,10 @@ class PyIBFV:
 		glVertex2f(1.0, 0.0)
 		glTexCoord2f(self.tmax, self.tmax)
 		glVertex2f(1.0, 1.0)
-		glEnd();
-		glDisable(GL_BLEND);
+		glEnd()
+		glDisable(GL_BLEND)
 
-
-		# Draw texture to the screen
+	def drawFboTOScreen(self):
 		glBindFramebuffer(GL_FRAMEBUFFER, 0)
 		glViewport(0,0,512,512)
 
@@ -282,10 +277,15 @@ class PyIBFV:
 		glEnd()
 		glDisable(GL_TEXTURE_2D)
 
+	# The main drawing function.
+	def DrawGLScene(self):
+		# update displacements vbo
+		self.updateDisplacements()
+		self.drawToFbo()
+		self.drawFboTOScreen()
 		glutSwapBuffers()
 		self.framenr += 1
 		self.fps()
-		#time.sleep(0.01)
 
 	def saveTexture(self, size, filename):
 		tex = np.empty(size[0] * size[1], dtype=np.uint8)
