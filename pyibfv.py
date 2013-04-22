@@ -66,6 +66,9 @@ class PyIBFV:
 		# Set the blending function
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
+		# Unbind FBO
+		glBindFramebuffer(GL_FRAMEBUFFER, 0)
+
 
 		# init VBO's for for mesh location and texture coordinates
 		# based on: http://dan.lecocq.us/wordpress/2009/12/25/triangle-strip-for-grids-a-construction/
@@ -250,9 +253,9 @@ class PyIBFV:
 		glVertex2f(1.0, 1.0)
 		glEnd()
 		glDisable(GL_BLEND)
+		glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
 	def drawFboTOScreen(self):
-		glBindFramebuffer(GL_FRAMEBUFFER, 0)
 		glViewport(0,0,512,512)
 
 		glLoadIdentity()
@@ -274,15 +277,19 @@ class PyIBFV:
 		glEnd()
 		glDisable(GL_TEXTURE_2D)
 
+	def idleFunc(self):
+		self.drawGLScene()
+		self.fps()
+		glutSwapBuffers()
+
 	# The main drawing function.
-	def DrawGLScene(self):
+	def drawGLScene(self):
 		# update displacements vbo
+		self.framenr += 1
 		self.updateDisplacements()
 		self.drawToFbo()
 		self.drawFboTOScreen()
-		glutSwapBuffers()
-		self.framenr += 1
-		self.fps()
+
 
 	def saveTexture(self, size, filename):
 		tex = np.empty(size[0] * size[1], dtype=np.uint8)
@@ -310,7 +317,7 @@ class PyIBFV:
 		glutInitWindowPosition(0, 0)
 		window = glutCreateWindow("PyIBFV")
 		glutDisplayFunc(self.DrawGLScene)
-		glutIdleFunc(self.DrawGLScene)
+		glutIdleFunc(self.idleFunc)
 		glutReshapeFunc(self.ReSizeGLScene)
 		glutKeyboardFunc(self.keyPressed)
 		self.InitGL(512, 512)
