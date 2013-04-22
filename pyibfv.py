@@ -48,18 +48,9 @@ class PyIBFV:
 		glBindFramebuffer(GL_FRAMEBUFFER, self.fbo )
 
 		# FBO texture 1
-		self.renderedTexture1 = glGenTextures(1)
-		glBindTexture(GL_TEXTURE_2D, self.renderedTexture1)
-		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, None)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-
+		self.renderedTexture1 = self.generateFboTexture()
 		# FBO texture 2
-		self.renderedTexture2 = glGenTextures(1)
-		glBindTexture(GL_TEXTURE_2D, self.renderedTexture2)
-		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, None)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+		self.renderedTexture2 = self.generateFboTexture()
 
 		# Set the first texture as color attachment
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTexture1, 0)
@@ -119,6 +110,14 @@ class PyIBFV:
 					i += 2
 			index = indices[i-1]
 		self.ibo = vbo.VBO(indices, GL_DYNAMIC_DRAW, GL_ELEMENT_ARRAY_BUFFER)
+
+	def generateFboTexture(self):
+		texture = glGenTextures(1)
+		glBindTexture(GL_TEXTURE_2D, texture)
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, None)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+		return texture
 
 	def getDisplacements(self):
 		size = self.nmesh ** 2 * 2
