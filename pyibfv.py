@@ -47,20 +47,18 @@ class PyIBFV:
 		self.fbo = glGenFramebuffers(1)
 		glBindFramebuffer(GL_FRAMEBUFFER, self.fbo )
 
-		# FBO texture 1
-		self.renderedTexture1 = self.generateFboTexture()
-		# FBO texture 2
-		self.renderedTexture2 = self.generateFboTexture()
+		# Geenrate 2 FBO textures
+		self.renderedTextures = self.generateFboTexture(), self.generateFboTexture()
 
 		# Set the first texture as color attachment
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTexture1, 0)
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTextures[0], 0)
 
 		# Set the list of draw buffers.
 		glDrawBuffers(1, GL_COLOR_ATTACHMENT0) #"1" is the size of DrawBuffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
 		# Clear the 2nd texture
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTexture2, 0)
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTextures[1], 0)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
 		self.framenr = 0
@@ -205,7 +203,7 @@ class PyIBFV:
 		glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)
 		glViewport(0,0,512,512)
 		# pingpong between the 2 FBO textures
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTexture2 if self.framenr % 2 is 0 else self.renderedTexture1, 0)
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTextures[self.framenr % 2], 0)
 
 		glMatrixMode(GL_PROJECTION)
 		glLoadIdentity()
@@ -216,7 +214,7 @@ class PyIBFV:
 		DM = 1.0 / (self.nmesh-1.0)
 		texture = self.framenr % self.num_patterns
 		glEnable(GL_TEXTURE_2D)
-		glBindTexture(GL_TEXTURE_2D, self.renderedTexture2 if self.framenr % 2 is not 0  else self.renderedTexture1)
+		glBindTexture(GL_TEXTURE_2D, self.renderedTextures[(self.framenr + 1) % 2])
 
 		# warp the texture!
 		glEnableClientState(GL_VERTEX_ARRAY)
@@ -261,7 +259,7 @@ class PyIBFV:
 		glTranslatef(-1.0, -1.0, 0.0)
 		glScalef(2.0, 2.0, 1.0)
 
-		glBindTexture(GL_TEXTURE_2D, self.renderedTexture2 if self.framenr % 2 is 0  else self.renderedTexture1)
+		glBindTexture(GL_TEXTURE_2D, self.renderedTextures[self.framenr % 2])
 		#self.saveTexture((512, 512), "screenshots/%d.png" % self.framenr)
 
 		glBegin(GL_QUAD_STRIP)
