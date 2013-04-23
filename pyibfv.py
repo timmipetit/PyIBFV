@@ -24,8 +24,9 @@ class PyIBFV:
 		self.alpha = 0.12
 		self.textures = []
 		self.scale = 4.0
-		self.tmax = 512/(self.scale*self.pattern_res)
-		self.dmax = self.scale / 512
+		self.fbosize = 512
+		self.tmax = self.fbosize / (self.scale * self.pattern_res)
+		self.dmax = self.scale / self.fbosize
 
 		self.last_time = time.time()
 		self.frames = 0
@@ -116,7 +117,7 @@ class PyIBFV:
 	def generateFboTexture(self):
 		texture = glGenTextures(1)
 		glBindTexture(GL_TEXTURE_2D, texture)
-		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 512, 512, 0,GL_RGB, GL_UNSIGNED_BYTE, None)
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, self.fbosize, self.fbosize, 0,GL_RGB, GL_UNSIGNED_BYTE, None)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
 		return texture
@@ -204,7 +205,7 @@ class PyIBFV:
 	def drawToFbo(self):
 		# Draw to the texture in the FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)
-		glViewport(0,0,512,512)
+		glViewport(0,0,self.fbosize,self.fbosize)
 		# pingpong between the 2 FBO textures
 		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, self.renderedTextures[self.framenr % 2], 0)
 
@@ -256,7 +257,7 @@ class PyIBFV:
 		glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
 	def drawFboTOScreen(self):
-		glViewport(0,0,512,512)
+		glViewport(0,0,self.fbosize,self.fbosize)
 
 		glLoadIdentity()
 		glTranslatef(-1.0, -1.0, 0.0)
@@ -312,14 +313,14 @@ class PyIBFV:
 	def main(self):
 		glutInit(sys.argv)
 		glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH)
-		glutInitWindowSize(512, 512)
+		glutInitWindowSize(self.fbosize, self.fbosize)
 		glutInitWindowPosition(0, 0)
 		window = glutCreateWindow("PyIBFV")
 		glutDisplayFunc(self.drawGLScene)
 		glutIdleFunc(self.idleFunc)
 		glutReshapeFunc(self.ReSizeGLScene)
 		glutKeyboardFunc(self.keyPressed)
-		self.InitGL(512, 512)
+		self.InitGL(self.fbosize, self.fbosize)
 		falloffValue = 1.0
 		self.rotY = 0.0
 
