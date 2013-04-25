@@ -33,17 +33,6 @@ class PyIBFV:
 		self.sa = 0.01
 
 	def InitGL(self, Width, Height):
-		#glClearColor(0.0, 0.0, 0.0, 0.0)
-		#glClearDepth(1.0)
-		#glShadeModel(GL_SMOOTH)
-
-		#glMatrixMode(GL_PROJECTION)
-		#glLoadIdentity()
-
-		#gluPerspective(45.0, float(Width)/float(Height), 0.1, 100.0)
-
-		#glMatrixMode(GL_MODELVIEW)
-
 		# Create fbo with 2 textures.
 		self.fbo = glGenFramebuffers(1)
 		glBindFramebuffer(GL_FRAMEBUFFER, self.fbo )
@@ -321,8 +310,6 @@ class PyIBFV:
 		glutReshapeFunc(self.ReSizeGLScene)
 		glutKeyboardFunc(self.keyPressed)
 		self.InitGL(self.fbosize, self.fbosize)
-		falloffValue = 1.0
-		self.rotY = 0.0
 
 		self.makePatterns()
 		glutMainLoop()
