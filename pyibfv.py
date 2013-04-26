@@ -53,9 +53,6 @@ class PyIBFV:
 
 		self.framenr = 0
 
-		# Set the blending function
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
 		# Unbind FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
@@ -192,6 +189,7 @@ class PyIBFV:
 		return [px, py]
 
 	def drawToFbo(self):
+		self.framenr += 1
 		# Draw to the texture in the FBO
 		glBindFramebuffer(GL_FRAMEBUFFER, self.fbo)
 		glViewport(0,0,self.fbosize,self.fbosize)
@@ -230,6 +228,7 @@ class PyIBFV:
 		glDisableClientState(GL_VERTEX_ARRAY)
 
 		# Blend in some "fresh" noise
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 		glEnable(GL_BLEND)
 		glBindTexture(GL_TEXTURE_2D, self.textures[texture])
 		glBegin(GL_QUAD_STRIP)
@@ -245,6 +244,9 @@ class PyIBFV:
 		glDisable(GL_BLEND)
 		glBindFramebuffer(GL_FRAMEBUFFER, 0)
 
+	def getFboTextureForScreen(self):
+		return self.renderedTextures[self.framenr % 2]
+
 	def drawFboTOScreen(self):
 		glViewport(0,0,self.fbosize,self.fbosize)
 
@@ -252,7 +254,7 @@ class PyIBFV:
 		glTranslatef(-1.0, -1.0, 0.0)
 		glScalef(2.0, 2.0, 1.0)
 
-		glBindTexture(GL_TEXTURE_2D, self.renderedTextures[self.framenr % 2])
+		glBindTexture(GL_TEXTURE_2D, self.getFboTextureForScreen())
 		#self.saveTexture((512, 512), "screenshots/%d.png" % self.framenr)
 
 		glBegin(GL_QUAD_STRIP)
@@ -275,7 +277,6 @@ class PyIBFV:
 
 	# The main drawing function.
 	def drawGLScene(self):
-		self.framenr += 1
 		self.drawToFbo()
 		self.drawFboTOScreen()
 
